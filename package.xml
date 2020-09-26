@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>rviz_adas_map_builder</name>
+  <version>0.0.0</version>
+  <description>Package to modify ADAS map with Rviz</description>
+
+  <maintainer email="kuriatsubayashi712@gmail.com">kuriatsu</maintainer>
+
+  <license>Apache 2.0</license>
+
+  <depend>roscpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>tf</depend>
+  <depend>pcl_ros</depend>
+  <depend>visualization_msgs</depend>
+  <depend>interactive_markers</depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>
