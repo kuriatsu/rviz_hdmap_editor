@@ -8,6 +8,8 @@
 #include <ros/ros.h>
 #include <rviz/panel.h>
 #include <pluginlib/class_list_macros.h>
+#include "rviz_hdmap_editor_core.h"
+
 #endif
 
 namespace Ui {
@@ -23,6 +25,7 @@ class Widget : public rviz::Panel
 public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
+    RvizHdmapEditorCore editor_core;
 
 private Q_SLOTS:
     void on_hdmap_ok_clicked();
@@ -62,21 +65,10 @@ private:
     bool hdmap_ok_toggle;
     bool waypoint_ok_toggle;
 
-    QString hdmap_input_filenames;
-    QString hdmap_output_filenames;
-    QString waypoint_filename;
-    QString waypoint_output_filename;
-
-    bool whiteline;
-    bool node;
-    bool lane;
-    bool area;
-    bool roadedge;
-    bool stopline;
-    bool railroad;
-    bool pole;
-    bool crosswalk;
-    bool intersection;
+    // QString hdmap_input_filenames;
+    // QString hdmap_output_dirname;
+    // QString waypoint_input_filename;
+    // QString waypoint_output_filename;
 
 Q_SIGNALS:
     void hdmapInputSelected(QString filenames);

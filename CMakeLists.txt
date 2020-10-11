@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(rviz_hdmap_builder)
+project(rviz_hdmap_editor)
 
 add_compile_options(-std=c++11)
 
@@ -22,26 +22,28 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   tf
   visualization_msgs
-  pcl_ros
   rviz
 )
 
 catkin_package(
-#	INCLUDE_DIRS include
-#  LIBRARIES extract_roi
-#  CATKIN_DEPENDS cv_bridge image_transport roscpp sensor_msgs std_msgs
+INCLUDE_DIRS include
+LIBRARIES rviz_hdmap_editor_core
+CATKIN_DEPENDS roscpp geometry_msgs interactive_markers visualization_msgs
+
 #  DEPENDS system_lib
 )
 
 include_directories(
-#	include
+  include
 	${catkin_INCLUDE_DIRS}  ${OpenCV_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME}_node src/rviz_adas_map_builder.cpp)
-target_link_libraries(${PROJECT_NAME}_node
+add_library(rviz_hdmap_editor_core lib/rviz_hdmap_editor_core.cpp)
+add_dependencies(rviz_hdmap_editor_core ${catkin_EXPORTED_TARGETS})
+target_link_libraries(rviz_hdmap_editor_core
   ${catkin_LIBRARIES}
 )
 
 add_library(widget src/widget.cpp src/widget.ui)
-target_link_libraries(widget ${catkin_LIBRARIES} ${QT_LIBRARIES})
+add_dependencies(widget rviz_hdmap_editor_core)
+target_link_libraries(widget rviz_hdmap_editor_core ${catkin_LIBRARIES} ${QT_LIBRARIES})

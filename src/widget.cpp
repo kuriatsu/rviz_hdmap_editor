@@ -22,11 +22,15 @@ void Widget::on_hdmap_ok_clicked()
 {
     if (!hdmap_ok_toggle)
     {
+        for (auto &e: ui->hdmap_input_filename->text().split(QLatin1Char(',')))
+        {
+            editor_core.readHdmap(e.toStdString());
+        }
         ui->hdmap_ok->setText(tr("Save"));
-
     }
     else
     {
+        editor_core.saveHdmap((ui->hdmap_output_filename->text().toStdString()));
         ui->hdmap_ok->setText(tr("OK"));
 
     }
@@ -39,11 +43,11 @@ void Widget::on_hdmap_ok_clicked()
 
 void Widget::on_hdmap_input_select_clicked()
 {
-    QStringList filenames;
+    QStringList filename_list;
     QString filename;
-    filenames = QFileDialog::getOpenFileNames(this, tr("Select Files"), "~/", tr("HDMap Files (*.csv)"));
+    filename_list = QFileDialog::getOpenFileNames(this, tr("Select Files"), "~/", tr("HDMap Files (*.csv)"));
 
-    for (QStringList::Iterator itr = filenames.begin(); itr != filenames.end(); ++itr)
+    for (QStringList::Iterator itr = filename_list.begin(); itr != filename_list.end(); ++itr)
     {
         filename.append(*itr);
         filename.append(",");
@@ -62,6 +66,7 @@ void Widget::on_waypoint_ok_clicked()
 {
     if (!waypoint_ok_toggle)
     {
+        // editor_core.readHdmaps(hdmap_input_filenames)
         ui->waypoint_ok->setText(tr("Save"));
 
     }
@@ -93,52 +98,53 @@ void Widget::on_waypoint_output_select_clicked()
 
 void Widget::on_node_toggled(bool checked)
 {
-    node = checked;
+    editor_core.toggleHdmapElement("node", checked)
 }
 
 void Widget::on_lane_toggled(bool checked)
 {
-    lane = checked;
+    editor_core.toggleHdmapElement("lane", checked)
 }
 
 void Widget::on_area_toggled(bool checked)
 {
-    area = checked;
+    editor_core.toggleHdmapElement("area", checked)
 }
 
 void Widget::on_roadedge_toggled(bool checked)
 {
-    roadedge = checked;
+    editor_core.toggleHdmapElement("roadedge", checked)
 }
 
 void Widget::on_stopline_toggled(bool checked)
 {
+    editor_core.toggleHdmapElement("stopline", checked)
     stopline = checked;
 }
 
 void Widget::on_railroad_toggled(bool checked)
 {
-    railroad = checked;
+    editor_core.toggleHdmapElement("railroad", checked)
 }
 
 void Widget::on_pole_toggled(bool checked)
 {
-    pole = checked;
+    editor_core.toggleHdmapElement("pole", checked)
 }
 
 void Widget::on_crosswalk_toggled(bool checked)
 {
-    crosswalk = checked;
+    editor_core.toggleHdmapElement("crosswalk", checked)
 }
 
 void Widget::on_whiteline_toggled(bool checked)
 {
-    whiteline = checked;
+    editor_core.toggleHdmapElement("whiteline", checked)
 }
 
 void Widget::on_intersection_toggled(bool checked)
 {
-    intersection = checked;
+    editor_core.toggleHdmapElement("intersection", checked)
 }
 }
 PLUGINLIB_EXPORT_CLASS(rviz_hdmap_builder::Widget, rviz::Panel)
