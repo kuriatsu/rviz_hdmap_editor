@@ -35,12 +35,12 @@ public:
 	void readHdmap(const std::string &filename);
 	void saveHdmap(const std::string &dirname);
 	void toggleHdmapElement(const std::string &element_name, const bool &toggle);
+	void refleshAdasMarker();
 
 private:
 	std::string getHdmapType(const std::string &filename);
 	visualization_msgs::InteractiveMarker makeIntPoint(const std::string &name, const geometry_msgs::Point &point, const std_msgs::ColorRGBA &color);
 	void intMarkerCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback);
-	void refleshAdasMarker();
 	void makeWhiteline();
 	void makeRoadedge();
 	void makeStopline();

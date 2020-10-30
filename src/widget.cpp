@@ -27,6 +27,7 @@ void Widget::on_hdmap_ok_clicked()
             editor_core.readHdmap(e.toStdString());
         }
         ui->hdmap_ok->setText(tr("Save"));
+        // editor_core.refleshAdasMarker();
     }
     else
     {
@@ -98,53 +99,52 @@ void Widget::on_waypoint_output_select_clicked()
 
 void Widget::on_node_toggled(bool checked)
 {
-    editor_core.toggleHdmapElement("node", checked)
+    editor_core.toggleHdmapElement("node", checked);
 }
 
 void Widget::on_lane_toggled(bool checked)
 {
-    editor_core.toggleHdmapElement("lane", checked)
+    editor_core.toggleHdmapElement("lane", checked);
 }
 
 void Widget::on_area_toggled(bool checked)
 {
-    editor_core.toggleHdmapElement("area", checked)
+    editor_core.toggleHdmapElement("area", checked);
 }
 
 void Widget::on_roadedge_toggled(bool checked)
 {
-    editor_core.toggleHdmapElement("roadedge", checked)
+    editor_core.toggleHdmapElement("roadedge", checked);
 }
 
 void Widget::on_stopline_toggled(bool checked)
 {
-    editor_core.toggleHdmapElement("stopline", checked)
-    stopline = checked;
+    editor_core.toggleHdmapElement("stopline", checked);
 }
 
 void Widget::on_railroad_toggled(bool checked)
 {
-    editor_core.toggleHdmapElement("railroad", checked)
+    editor_core.toggleHdmapElement("railroad", checked);
 }
 
 void Widget::on_pole_toggled(bool checked)
 {
-    editor_core.toggleHdmapElement("pole", checked)
+    editor_core.toggleHdmapElement("pole", checked);
 }
 
 void Widget::on_crosswalk_toggled(bool checked)
 {
-    editor_core.toggleHdmapElement("crosswalk", checked)
+    editor_core.toggleHdmapElement("crosswalk", checked);
 }
 
 void Widget::on_whiteline_toggled(bool checked)
 {
-    editor_core.toggleHdmapElement("whiteline", checked)
+    editor_core.toggleHdmapElement("whiteline", checked);
 }
 
 void Widget::on_intersection_toggled(bool checked)
 {
-    editor_core.toggleHdmapElement("intersection", checked)
+    editor_core.toggleHdmapElement("intersection", checked);
 }
 }
 PLUGINLIB_EXPORT_CLASS(rviz_hdmap_builder::Widget, rviz::Panel)
