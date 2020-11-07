@@ -117,8 +117,6 @@ void RvizHdmapEditorCore::refleshAdasMarker()
 
 void RvizHdmapEditorCore::makeWhiteline()
 {
-	if (!hdmap_info_dict.at("whiteline").is_visible) return;
-
 	std::cout << "make whiteline" << std::endl; 
 	geometry_msgs::Point p;
     std::vector<std::string> added_points;
@@ -138,27 +136,33 @@ void RvizHdmapEditorCore::makeWhiteline()
 		{
 			std::string point_id = line_data.at(whiteline_elem.second[1])[i];
 
-            if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
-            {
-                continue;
-            }
+			if(hdmap_info_dict.at("whiteline").is_visible)
+			{
+			    if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
+	            {
+	                continue;
+	            }
 
-            added_points.emplace_back(point_id);
-			std::vector<std::string> &point = point_data.at(point_id);
+	            added_points.emplace_back(point_id);
+				std::vector<std::string> &point = point_data.at(point_id);
 
-            p.y = std::stof(point[4]);
-			p.x = std::stof(point[5]);
-			p.z = std::stof(point[3]);
+	            p.y = std::stof(point[4]);
+				p.x = std::stof(point[5]);
+				p.z = std::stof(point[3]);
 
-			int_marker_server->insert(makeIntPoint(point_id, p, color));
-			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));
+				int_marker_server->insert(makeIntPoint(point_id, p, color));
+				int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));		
+			}
+			else
+			{
+				int_marker_server->erase(point_id);
+			}
 		}
 	}
 }
 
 void RvizHdmapEditorCore::makeRoadedge()
 {
-	if (!hdmap_info_dict.at("roadedge").is_visible) return;
 	std::cout << "make roadedge" << std::endl; 
 
 	geometry_msgs::Point p;
@@ -179,27 +183,33 @@ void RvizHdmapEditorCore::makeRoadedge()
 		{
 			std::string point_id = line_data.at(roadedge_elem.second[1])[i];
 
-            if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
-            {
-                continue;
-            }
+			if (hdmap_info_dict.at("roadedge").is_visible)
+			{
+			    if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
+	            {
+	                continue;
+	            }
 
-            added_points.emplace_back(point_id);
-			std::vector<std::string> &point = point_data.at(point_id);
+	            added_points.emplace_back(point_id);
+				std::vector<std::string> &point = point_data.at(point_id);
 
-            p.y = std::stof(point[4]);
-			p.x = std::stof(point[5]);
-			p.z = std::stof(point[3]);
+	            p.y = std::stof(point[4]);
+				p.x = std::stof(point[5]);
+				p.z = std::stof(point[3]);
 
-			int_marker_server->insert(makeIntPoint(point_id, p, color));
-			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));
+				int_marker_server->insert(makeIntPoint(point_id, p, color));
+				int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));		
+			}
+         	else
+         	{
+         		int_marker_server->erase(point_id);
+         	}
 		}
 	}
 }
 
 void RvizHdmapEditorCore::makeStopline()
 {
-	if (!hdmap_info_dict.at("stopline").is_visible) return;
 	std::cout << "make stopline" << std::endl; 
 
 	geometry_msgs::Point p;
@@ -220,20 +230,27 @@ void RvizHdmapEditorCore::makeStopline()
 		{
 			std::string point_id = line_data.at(stopline_elem.second[1])[i];
 
-            if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
-            {
-                continue;
-            }
+			if (hdmap_info_dict.at("stopline").is_visible)
+			{
+			    if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
+	            {
+	                continue;
+	            }
 
-            added_points.emplace_back(point_id);
-			std::vector<std::string> &point = point_data.at(point_id);
+	            added_points.emplace_back(point_id);
+				std::vector<std::string> &point = point_data.at(point_id);
 
-            p.y = std::stof(point[4]);
-			p.x = std::stof(point[5]);
-			p.z = std::stof(point[3]);
+	            p.y = std::stof(point[4]);
+				p.x = std::stof(point[5]);
+				p.z = std::stof(point[3]);
 
-			int_marker_server->insert(makeIntPoint(point_id, p, color));
-			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));
+				int_marker_server->insert(makeIntPoint(point_id, p, color));
+				int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));		
+			}
+			else
+			{
+				int_marker_server->erase(point_id);
+			}
 		}
 	}
 }
@@ -241,7 +258,6 @@ void RvizHdmapEditorCore::makeStopline()
 
 void RvizHdmapEditorCore::makeNode()
 {
-	if (!hdmap_info_dict.at("node").is_visible) return;
 	std::cout << "make node" << std::endl; 
 
 	geometry_msgs::Point p;
@@ -260,13 +276,13 @@ void RvizHdmapEditorCore::makeNode()
 	{
 		std::string point_id = node_elem.second[1];
 
-        if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
-        {
-            continue;
-        }
+		if (hdmap_info_dict.at("node").is_visible)
+		{
+		    if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
+	        {
+	            continue;
+	        }
 
-        try
-        {
 			std::vector<std::string> &point = point_data.at(point_id);
 			added_points.emplace_back(point_id);
 
@@ -277,19 +293,18 @@ void RvizHdmapEditorCore::makeNode()
 
 			int_marker_server->insert(makeIntPoint(point_id, p, color));
 			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));
-        }
-        catch (std::out_of_range e)
-		{
-			std::cout << "no point : " << point_id << std::endl;
+		
 		}
-
+		else
+		{
+			int_marker_server->erase(point_id);
+		}    
 
 	}
 }
 
 void RvizHdmapEditorCore::makeRailroad()
 {
-	if (!hdmap_info_dict.at("railroad_crossing").is_visible) return;
 	std::cout << "make railroad_crossing" << std::endl; 
 
 	geometry_msgs::Point p;
@@ -312,19 +327,28 @@ void RvizHdmapEditorCore::makeRailroad()
 			for (int i=1; i<2; ++i)
 			{
 				std::string point_id = line_data.at(std::to_string(line_id))[i];
-		        if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
-		        {
-		            continue;
-		        }
-		        added_points.emplace_back(point_id);
-				std::vector<std::string> &point = point_data.at(point_id);
+		 
+				if(hdmap_info_dict.at("railroad_crossing").is_visible)
+				{
+					if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
+			        {
+			            continue;
+			        }
+			        added_points.emplace_back(point_id);
+					std::vector<std::string> &point = point_data.at(point_id);
 
-		        p.y = std::stof(point[4]);
-				p.x = std::stof(point[5]);
-				p.z = std::stof(point[3]);
+			        p.y = std::stof(point[4]);
+					p.x = std::stof(point[5]);
+					p.z = std::stof(point[3]);
 
-				int_marker_server->insert(makeIntPoint(point_id, p, color));
-				int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));
+					int_marker_server->insert(makeIntPoint(point_id, p, color));
+					int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));	
+				}
+				else
+				{
+					int_marker_server->erase(point_id);
+				}
+		        
 			}
 		}
 	}
@@ -333,7 +357,6 @@ void RvizHdmapEditorCore::makeRailroad()
 
 void RvizHdmapEditorCore::makeCrosswalk()
 {
-	if (!hdmap_info_dict.at("crosswalk").is_visible) return;
 	std::cout << "make crosswalk" << std::endl; 
 
 	geometry_msgs::Point p;
@@ -356,19 +379,27 @@ void RvizHdmapEditorCore::makeCrosswalk()
 			for (int i=1; i<2; ++i)
 			{
 				std::string point_id = line_data.at(std::to_string(line_id))[i];
-		        if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
+
+				if(hdmap_info_dict.at("crosswalk").is_visible)
+				{
+					if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
+			        {
+			            continue;
+			        }
+			        added_points.emplace_back(point_id);
+					std::vector<std::string> &point = point_data.at(point_id);
+
+			        p.y = std::stof(point[4]);
+					p.x = std::stof(point[5]);
+					p.z = std::stof(point[3]);
+
+					int_marker_server->insert(makeIntPoint(point_id, p, color));
+					int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));	
+				}
+		        else
 		        {
-		            continue;
+		        	int_marker_server->erase(point_id);
 		        }
-		        added_points.emplace_back(point_id);
-				std::vector<std::string> &point = point_data.at(point_id);
-
-		        p.y = std::stof(point[4]);
-				p.x = std::stof(point[5]);
-				p.z = std::stof(point[3]);
-
-				int_marker_server->insert(makeIntPoint(point_id, p, color));
-				int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));
 			}
 		}
 	}
@@ -377,7 +408,6 @@ void RvizHdmapEditorCore::makeCrosswalk()
 
 void RvizHdmapEditorCore::makeIntersection()
 {
-	if (!hdmap_info_dict.at("intersection").is_visible) return;
 	std::cout << "make intersection" << std::endl; 
 
 	geometry_msgs::Point p;
@@ -400,19 +430,28 @@ void RvizHdmapEditorCore::makeIntersection()
 			for (int i=1; i<2; ++i)
 			{
 				std::string point_id = line_data.at(std::to_string(line_id))[i];
-		        if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
-		        {
-		            continue;
-		        }
-		        added_points.emplace_back(point_id);
-				std::vector<std::string> &point = point_data.at(point_id);
+		 
+				if(hdmap_info_dict.at("intersection").is_visible)
+				{
+					if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
+			        {
+			            continue;
+			        }
+			        added_points.emplace_back(point_id);
+					std::vector<std::string> &point = point_data.at(point_id);
 
-		        p.y = std::stof(point[4]);
-				p.x = std::stof(point[5]);
-				p.z = std::stof(point[3]);
+			        p.y = std::stof(point[4]);
+					p.x = std::stof(point[5]);
+					p.z = std::stof(point[3]);
 
-				int_marker_server->insert(makeIntPoint(point_id, p, color));
-				int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));
+					int_marker_server->insert(makeIntPoint(point_id, p, color));
+					int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));	
+				}
+				else
+				{
+					int_marker_server->erase(point_id);
+				}
+		        
 			}
 		}
 	}
@@ -421,7 +460,6 @@ void RvizHdmapEditorCore::makeIntersection()
 
 void RvizHdmapEditorCore::makePole()
 {
-	if (!hdmap_info_dict.at("pole").is_visible) return;
 	std::cout << "make pole" << std::endl; 
 
 	geometry_msgs::Point p;
@@ -440,25 +478,33 @@ void RvizHdmapEditorCore::makePole()
 	{
 
 		std::string point_id = vector_data.at(pole_elem.second[1])[1];
-        if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
-        {
-            continue;
-        }
-        added_points.emplace_back(point_id);
-		std::vector<std::string> &point = point_data.at(point_id);
+        
+		if (hdmap_info_dict.at("pole").is_visible)
+		{
+			if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
+	        {
+	            continue;
+	        }
 
-        p.y = std::stof(point[4]);
-		p.x = std::stof(point[5]);
-		p.z = std::stof(point[3]);
+	        added_points.emplace_back(point_id);
+			std::vector<std::string> &point = point_data.at(point_id);
 
-		int_marker_server->insert(makeIntPoint(point_id, p, color));
-		int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));
+	        p.y = std::stof(point[4]);
+			p.x = std::stof(point[5]);
+			p.z = std::stof(point[3]);
+
+			int_marker_server->insert(makeIntPoint(point_id, p, color));
+			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));	
+		}
+		else
+		{
+			int_marker_server->erase(point_id);
+		}
 	}
 }
 
 void RvizHdmapEditorCore::makeSignal()
 {
-	if (!hdmap_info_dict.at("signaldata").is_visible) return;
 	std::cout << "make signaldata" << std::endl; 
 
 	geometry_msgs::Point p;
@@ -477,25 +523,32 @@ void RvizHdmapEditorCore::makeSignal()
 	{
 
 		std::string point_id = vector_data.at(signal_elem.second[1])[1];
-        if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
-        {
-            continue;
-        }
-        added_points.emplace_back(point_id);
-		std::vector<std::string> &point = point_data.at(point_id);
 
-        p.y = std::stof(point[4]);
-		p.x = std::stof(point[5]);
-		p.z = std::stof(point[3]);
+		if (hdmap_info_dict.at("signaldata").is_visible)
+		{
+			if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
+	        {
+	            continue;
+	        }
+	        added_points.emplace_back(point_id);
+			std::vector<std::string> &point = point_data.at(point_id);
 
-		int_marker_server->insert(makeIntPoint(point_id, p, color));
-		int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));
+	        p.y = std::stof(point[4]);
+			p.x = std::stof(point[5]);
+			p.z = std::stof(point[3]);
+
+			int_marker_server->insert(makeIntPoint(point_id, p, color));
+			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));	
+		}
+		else
+		{
+			int_marker_server->erase(point_id);
+		}
 	}
 }
 
 void RvizHdmapEditorCore::makeLane()
 {
-	if (!hdmap_info_dict.at("lane").is_visible) return;
 	std::cout << "make lane" << std::endl; 
 
 	geometry_msgs::Point p;
@@ -512,21 +565,30 @@ void RvizHdmapEditorCore::makeLane()
 
 	for (const auto &lane_elem : lane_data)
 	{
-
 		std::string point_id = dtlane_data.at(lane_elem.second[1])[2];
-        if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
-        {
-            continue;
-        }
-        added_points.emplace_back(point_id);
-		std::vector<std::string> &point = point_data.at(point_id);
 
-        p.y = std::stof(point[4]);
-		p.x = std::stof(point[5]);
-		p.z = std::stof(point[3]);
+		if (hdmap_info_dict.at("lane").is_visible)
+		{
+	        if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
+	        {
+	            continue;
+	        }
 
-		int_marker_server->insert(makeIntPoint(point_id, p, color));
-		int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));
+	        added_points.emplace_back(point_id);
+			std::vector<std::string> &point = point_data.at(point_id);
+
+	        p.y = std::stof(point[4]);
+			p.x = std::stof(point[5]);
+			p.z = std::stof(point[3]);
+
+			int_marker_server->insert(makeIntPoint(point_id, p, color));
+			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));
+			
+		}
+		else
+		{
+			int_marker_server->erase(point_id);
+		}		
 	}
 }
 
