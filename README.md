@@ -6,12 +6,13 @@ The rviz plugin to modify ADAS map (AISAN format) with Rviz, written in c++, for
 * You can modify the map with localizing and checking the actual position of each element.
 * AISAN vector map builder which officially released is hard to modify the small error of position.
 
+![samnail](https://github.com/kuriatsu/rviz_hdmap_editor/blob/image/image/rviz_window.png)
+
 ## Requirement
 * ubuntu
 * ros
 * QT5 (basic packages, initially installed with ros)
 
-![samnail](https://github.com/kuriatsu/rviz_hdmap_editor/blob/image/image/rviz_window.png)
 
 ## Install
 1. create catkin_ws
@@ -21,7 +22,7 @@ mkdir -p catkin_ws/src
 cd /catkin_ws/src
 catkin_init_workspace
 ```
-1. download and build package
+2. download and build package
 ```bash
 cd /catkin_ws/src
 git clone https://github.com/kuriatsu/rviz_hdmap_editor.git rviz_hdmap_editor
@@ -37,34 +38,34 @@ roscore &
 rviz
 ```
 
-1. Load HDmap and pointclond map and publish /map tf or without them like below
+2. Load HDmap and pointclond map and publish /map tf or without them like below
 ```bash
 rosrun tf static_transform_publisher 0 0 0 0 0 0 /world /tf 100
 ```
 
-1. Add panel
+3. Add panel
 
 ![panel](https://github.com/kuriatsu/rviz_hdmap_editor/blob/image/image/add_panel.png)
 
-1. You can find the panel at right side.
+4. You can find the panel at right side.
 
 ![panel_added](https://github.com/kuriatsu/rviz_hdmap_editor/blob/image/image/select_panel.png)
 
-1. Select HDMap. point.csv, line.csv, vector.csv, and dtlane.csv are necessary. 
+5. Select HDMap. point.csv, line.csv, vector.csv, and dtlane.csv are necessary. 
 
 ![select_map](https://github.com/kuriatsu/rviz_hdmap_editor/blob/image/image/select_map.png)
 
-1. Select output folder.
+6. Select output folder.
 
 ![select_output](https://github.com/kuriatsu/rviz_hdmap_editor/blob/image/image/select_output.png)
 
-1. Push OK
+7. Push OK
 
-1. Click checkbox which you want to edit. (fig shows when you click `node`)
+8. Click checkbox which you want to edit. (fig shows when you click `node`)
 
 ![edit](https://github.com/kuriatsu/rviz_hdmap_editor/blob/image/image/edit_node.png)
 
-1. Push Save to save your modification.
+9. Push Save to save your modification.
 
 
 ## Contribution
