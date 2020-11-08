@@ -2,6 +2,9 @@
 #include <interactive_markers/interactive_marker_server.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <geometry_msgs/Point.h>
+#include <geometry_msgs/Pose.h>
+#include <tf/transform_broadcaster.h>
+
 
 #include <fstream>
 #include <vector>
@@ -32,7 +35,7 @@ private:
 public:
 	RvizHdmapEditorCore();
 	~RvizHdmapEditorCore();
-	void readHdmap(const std::string &filename);
+	std::string readHdmap(const std::string &filename);
 	void saveHdmap(const std::string &dirname);
 	void toggleHdmapElement(const std::string &element_name, const bool &toggle);
 	void refleshAdasMarker();
@@ -40,7 +43,11 @@ public:
 private:
 	std::string getHdmapType(const std::string &filename);
 	visualization_msgs::InteractiveMarker makeIntPoint(const std::string &name, const geometry_msgs::Point &point, const std_msgs::ColorRGBA &color);
-	void intMarkerCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback);
+	visualization_msgs::InteractiveMarker makeIntVector(const std::string &name, const geometry_msgs::Pose &pose, const std_msgs::ColorRGBA &color);
+	void intPointMarkerCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback);
+	void intVectorMarkerCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback);
+	geometry_msgs::Quaternion rpy2Quat(const double roll, const double pitch, const double yaw);
+	double quat2Yaw(geometry_msgs::Quaternion gm_quat);
 	void makeWhiteline();
 	void makeRoadedge();
 	void makeStopline();

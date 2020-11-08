@@ -18,12 +18,12 @@ RvizHdmapEditorCore::~RvizHdmapEditorCore()
 }
 
 
-void RvizHdmapEditorCore::readHdmap(const std::string &filename)
+std::string RvizHdmapEditorCore::readHdmap(const std::string &filename)
 {
-	if (filename.empty()) return;
+	// if (filename.empty()) return 0;
 
 	std::ifstream ifs(filename);
-	std::string line, field, header, type;
+	std::string line, field, header, type = getHdmapType(filename);
 	std::vector<std::string> raw_data_list;
 	std::map<std::string, std::vector<std::string>> extracted_data;
 	HdmapInfo hdmap_info;
@@ -43,12 +43,10 @@ void RvizHdmapEditorCore::readHdmap(const std::string &filename)
 		extracted_data[raw_data_list[0]] = raw_data_list;
 		raw_data_list.clear();
 	}	
-	std::cout << "got data " << std::endl;
-
 
 	hdmap_info.data = extracted_data;
-	hdmap_info_dict[getHdmapType(filename)] = hdmap_info;
-
+	hdmap_info_dict[type] = hdmap_info;
+	return type;
 
 }
 
@@ -151,7 +149,7 @@ void RvizHdmapEditorCore::makeWhiteline()
 				p.z = std::stof(point[3]);
 
 				int_marker_server->insert(makeIntPoint(point_id, p, color));
-				int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));		
+				int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intPointMarkerCb, this, _1));		
 			}
 			else
 			{
@@ -198,7 +196,7 @@ void RvizHdmapEditorCore::makeRoadedge()
 				p.z = std::stof(point[3]);
 
 				int_marker_server->insert(makeIntPoint(point_id, p, color));
-				int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));		
+				int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intPointMarkerCb, this, _1));		
 			}
          	else
          	{
@@ -245,7 +243,7 @@ void RvizHdmapEditorCore::makeStopline()
 				p.z = std::stof(point[3]);
 
 				int_marker_server->insert(makeIntPoint(point_id, p, color));
-				int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));		
+				int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intPointMarkerCb, this, _1));		
 			}
 			else
 			{
@@ -292,7 +290,7 @@ void RvizHdmapEditorCore::makeNode()
 			// std::cout << node_elem.second[0] << std::endl;
 
 			int_marker_server->insert(makeIntPoint(point_id, p, color));
-			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));
+			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intPointMarkerCb, this, _1));
 		
 		}
 		else
@@ -342,7 +340,7 @@ void RvizHdmapEditorCore::makeRailroad()
 					p.z = std::stof(point[3]);
 
 					int_marker_server->insert(makeIntPoint(point_id, p, color));
-					int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));	
+					int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intPointMarkerCb, this, _1));	
 				}
 				else
 				{
@@ -394,7 +392,7 @@ void RvizHdmapEditorCore::makeCrosswalk()
 					p.z = std::stof(point[3]);
 
 					int_marker_server->insert(makeIntPoint(point_id, p, color));
-					int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));	
+					int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intPointMarkerCb, this, _1));	
 				}
 		        else
 		        {
@@ -445,7 +443,7 @@ void RvizHdmapEditorCore::makeIntersection()
 					p.z = std::stof(point[3]);
 
 					int_marker_server->insert(makeIntPoint(point_id, p, color));
-					int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));	
+					int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intPointMarkerCb, this, _1));	
 				}
 				else
 				{
@@ -462,7 +460,7 @@ void RvizHdmapEditorCore::makePole()
 {
 	std::cout << "make pole" << std::endl; 
 
-	geometry_msgs::Point p;
+	geometry_msgs::Pose p;
     std::vector<std::string> added_points;
     auto &pole_data = hdmap_info_dict.at("pole").data;
     auto &vector_data = hdmap_info_dict.at("vector").data;
@@ -489,12 +487,13 @@ void RvizHdmapEditorCore::makePole()
 	        added_points.emplace_back(point_id);
 			std::vector<std::string> &point = point_data.at(point_id);
 
-	        p.y = std::stof(point[4]);
-			p.x = std::stof(point[5]);
-			p.z = std::stof(point[3]);
+	        p.position.y = std::stof(point[4]);
+			p.position.x = std::stof(point[5]);
+			p.position.z = std::stof(point[3]);
+			p.orientation = rpy2Quat(std::stod(vector_data.at(pole_elem.second[1])[3]), 0.0, std::stod(vector_data.at(pole_elem.second[1])[2]));
 
-			int_marker_server->insert(makeIntPoint(point_id, p, color));
-			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));	
+			int_marker_server->insert(makeIntVector(point_id, p, color));
+			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intPointMarkerCb, this, _1));	
 		}
 		else
 		{
@@ -507,7 +506,7 @@ void RvizHdmapEditorCore::makeSignal()
 {
 	std::cout << "make signaldata" << std::endl; 
 
-	geometry_msgs::Point p;
+	geometry_msgs::Pose p;
     std::vector<std::string> added_points;
     auto &signal_data = hdmap_info_dict.at("signaldata").data;
     auto &vector_data = hdmap_info_dict.at("vector").data;
@@ -533,12 +532,12 @@ void RvizHdmapEditorCore::makeSignal()
 	        added_points.emplace_back(point_id);
 			std::vector<std::string> &point = point_data.at(point_id);
 
-	        p.y = std::stof(point[4]);
-			p.x = std::stof(point[5]);
-			p.z = std::stof(point[3]);
-
-			int_marker_server->insert(makeIntPoint(point_id, p, color));
-			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));	
+	        p.position.y = std::stof(point[4]);
+			p.position.x = std::stof(point[5]);
+			p.position.z = std::stof(point[3]);
+			p.orientation = rpy2Quat(std::stod(vector_data.at(signal_elem.second[1])[3]), 0.0, std::stod(vector_data.at(signal_elem.second[1])[2]));
+			int_marker_server->insert(makeIntVector(point_id, p, color));
+			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intPointMarkerCb, this, _1));	
 		}
 		else
 		{
@@ -582,7 +581,7 @@ void RvizHdmapEditorCore::makeLane()
 			p.z = std::stof(point[3]);
 
 			int_marker_server->insert(makeIntPoint(point_id, p, color));
-			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intMarkerCb, this, _1));
+			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intPointMarkerCb, this, _1));
 			
 		}
 		else
@@ -609,6 +608,7 @@ visualization_msgs::InteractiveMarker RvizHdmapEditorCore::makeIntPoint(const st
 	visualization_msgs::InteractiveMarkerControl control;
 	control.always_visible = true;
 	control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_PLANE;
+	control.name = "move plane";
 	control.orientation.x = 0;
 	control.orientation.y = 1;
 	control.orientation.z = 0;
@@ -651,12 +651,107 @@ visualization_msgs::InteractiveMarker RvizHdmapEditorCore::makeIntPoint(const st
 	return int_marker;
 }
 
+visualization_msgs::InteractiveMarker RvizHdmapEditorCore::makeIntVector(const std::string &name, const geometry_msgs::Pose &pose, const std_msgs::ColorRGBA &color)
+{
 
-void RvizHdmapEditorCore::intMarkerCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
+	visualization_msgs::InteractiveMarker int_marker;
+	int_marker.header.frame_id = "map";
+	int_marker.name = name;
+	int_marker.scale = 0.1;
+	int_marker.pose = pose;
+
+	visualization_msgs::InteractiveMarkerControl control;
+	control.always_visible = true;
+
+    control.name = "move_3d";
+    control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_3D;
+    int_marker.controls.push_back(control);
+
+    control.orientation.w = 1;
+    control.orientation.x = 0;
+    control.orientation.y = 1;
+    control.orientation.z = 0;
+    control.name = "rotate_z";
+    control.interaction_mode = visualization_msgs::InteractiveMarkerControl::ROTATE_AXIS;
+    int_marker.controls.push_back(control);
+
+	visualization_msgs::Marker marker;
+	marker.ns="point";
+	marker.id = std::stoi(name);
+	marker.type = visualization_msgs::Marker::ARROW;
+	marker.action = visualization_msgs::Marker::ADD;
+	marker.scale.x = 0.5;
+	marker.scale.y = 0.5;
+	marker.scale.z = 0.5;
+	marker.color = color;
+
+	control.markers.emplace_back(marker);
+    int_marker.controls.emplace_back(control);
+
+    // control.always_visible = true;
+    // control.interaction_mode = visualization_msgs::InteractiveMarkerControl::NONE;
+    // control.orientation.x = 0;
+    // control.orientation.y = 1;
+    // control.orientation.z = 0;
+    // control.orientation.w = 1;
+
+    // marker.ns="range";
+	// marker.id = std::stoi(name);
+	// marker.type = visualization_msgs::Marker::CYLINDER;
+	// marker.action = visualization_msgs::Marker::ADD;
+	// marker.scale.x = 3.5;
+	// marker.scale.y = 3.5;
+	// marker.scale.z = 0.1;
+	// marker.color.r = 0.5;
+	// marker.color.g = 0.5;
+	// marker.color.b = 1;
+	// marker.color.a = 0.2;
+
+    // control.markers.emplace_back(marker);
+	// int_marker.controls.emplace_back(control);
+	return int_marker;
+}
+
+
+geometry_msgs::Quaternion RvizHdmapEditorCore::rpy2Quat(const double roll, const double pitch, const double yaw)
+{
+	tf::Quaternion tf_quat = tf::createQuaternionFromRPY(roll, pitch, yaw);
+	geometry_msgs::Quaternion gm_quat;
+	quaternionTFToMsg(tf_quat, gm_quat);
+	return gm_quat;
+}
+
+
+double RvizHdmapEditorCore::quat2Yaw(geometry_msgs::Quaternion gm_quat)
+{
+	double roll, pitch, yaw;
+	tf::Quaternion tf_quat;
+	quaternionMsgToTF(gm_quat, tf_quat);
+	tf::Matrix3x3(tf_quat).getRPY(roll, pitch, yaw);
+	return yaw;
+}
+
+void RvizHdmapEditorCore::intPointMarkerCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
 {
 	hdmap_info_dict.at("point").data.at(feedback->marker_name)[3] = std::to_string(feedback->pose.position.z);
 	hdmap_info_dict.at("point").data.at(feedback->marker_name)[4] = std::to_string(feedback->pose.position.y);
 	hdmap_info_dict.at("point").data.at(feedback->marker_name)[5] = std::to_string(feedback->pose.position.x);
+}
+
+void RvizHdmapEditorCore::intVectorMarkerCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
+{
+	hdmap_info_dict.at("point").data.at(feedback->marker_name)[3] = std::to_string(feedback->pose.position.z);
+	hdmap_info_dict.at("point").data.at(feedback->marker_name)[4] = std::to_string(feedback->pose.position.y);
+	hdmap_info_dict.at("point").data.at(feedback->marker_name)[5] = std::to_string(feedback->pose.position.x);
+	for (auto &vector_elem : hdmap_info_dict.at("vector").data)
+	{
+		// only signal data has some value at Hang (vang=0), poll should be hang=0, vang=0
+		if (vector_elem.second[1] == feedback->marker_name && vector_elem.second[3] != std::to_string(0))
+		{
+			vector_elem.second[2] = std::to_string(quat2Yaw(feedback->pose.orientation));
+			break;
+		}
+	}
 }
 
 int main(int argc, char **argv)

@@ -59,6 +59,8 @@ private Q_SLOTS:
     void on_whiteline_toggled(bool checked);
 
     void on_intersection_toggled(bool checked);
+    
+    void on_signal_toggled(bool checked);
 
 private:
     Ui::Widget *ui;

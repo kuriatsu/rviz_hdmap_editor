@@ -22,9 +22,24 @@ void Widget::on_hdmap_ok_clicked()
 {
     if (!hdmap_ok_toggle)
     {
+        if (ui->hdmap_input_filename->text().isEmpty() || ui->hdmap_output_filename->text().isEmpty()) return;
+
         for (auto &e: ui->hdmap_input_filename->text().split(QLatin1Char(',')))
         {
-            editor_core.readHdmap(e.toStdString());
+            std::string type = editor_core.readHdmap(e.toStdString());
+            // if (std::stoi(type) == 0) continue;
+            
+            if      (type == "node")         ui->node->setEnabled(true);
+            else if (type == "lane")         ui->lane->setEnabled(true);
+            else if (type == "area")         ui->area->setEnabled(true);
+            else if (type == "roadedge")     ui->roadedge->setEnabled(true);
+            else if (type == "stopline")     ui->stopline->setEnabled(true);
+            else if (type == "railroad_crossing")     ui->railroad->setEnabled(true);
+            else if (type == "pole")         ui->pole->setEnabled(true);
+            else if (type == "signaldata")       ui->signal->setEnabled(true);
+            else if (type == "crosswalk")    ui->crosswalk->setEnabled(true);
+            else if (type == "whiteline")    ui->whiteline->setEnabled(true);
+            else if (type == "intersection") ui->intersection->setEnabled(true);
         }
         ui->hdmap_ok->setText(tr("Save"));
         // editor_core.refleshAdasMarker();
@@ -33,6 +48,18 @@ void Widget::on_hdmap_ok_clicked()
     {
         editor_core.saveHdmap((ui->hdmap_output_filename->text().toStdString()));
         ui->hdmap_ok->setText(tr("OK"));
+
+        ui->node->setEnabled(false);
+        ui->lane->setEnabled(false);
+        ui->area->setEnabled(false);
+        ui->roadedge->setEnabled(false);
+        ui->stopline->setEnabled(false);
+        ui->railroad->setEnabled(false);
+        ui->pole->setEnabled(false);
+        ui->signal->setEnabled(false);
+        ui->crosswalk->setEnabled(false);
+        ui->whiteline->setEnabled(false);
+        ui->intersection->setEnabled(false);
 
     }
     ui->hdmap_input_filename->setEnabled(hdmap_ok_toggle);
@@ -124,7 +151,7 @@ void Widget::on_stopline_toggled(bool checked)
 
 void Widget::on_railroad_toggled(bool checked)
 {
-    editor_core.toggleHdmapElement("railroad", checked);
+    editor_core.toggleHdmapElement("railroad_crossing", checked);
 }
 
 void Widget::on_pole_toggled(bool checked)
@@ -145,6 +172,11 @@ void Widget::on_whiteline_toggled(bool checked)
 void Widget::on_intersection_toggled(bool checked)
 {
     editor_core.toggleHdmapElement("intersection", checked);
+}
+
+void Widget::on_signal_toggled(bool checked)
+{
+    editor_core.toggleHdmapElement("signaldata", checked);
 }
 }
 PLUGINLIB_EXPORT_CLASS(rviz_hdmap_builder::Widget, rviz::Panel)
