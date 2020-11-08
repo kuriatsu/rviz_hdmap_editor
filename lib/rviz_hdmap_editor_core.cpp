@@ -592,6 +592,100 @@ void RvizHdmapEditorCore::makeLane()
 }
 
 
+void RvizHdmapEditorCore::readWaypoint(const std::string &filename)
+{
+	// if (filename.empty()) return 0;
+
+	std::ifstream ifs(filename);
+	std::string line, field, header;
+	std::vector<std::string> raw_data_list;
+	std::map<std::string, std::vector<std::string>> extracted_data;
+	HdmapInfo hdmap_info;
+	int count = 0;
+
+	hdmap_info.input_filename = filename;
+	hdmap_info.is_visible = true;
+	std::getline(ifs, hdmap_info.header);
+	ROS_INFO_STREAM(filename);
+
+	while(std::getline(ifs, line))
+	{
+		std::istringstream stream(line);
+		while(std::getline(stream, field, ','))
+		{
+			raw_data_list.emplace_back(field);
+		}
+		extracted_data[std::to_string(count)] = raw_data_list;
+		raw_data_list.clear();
+		count++;
+	}	
+
+	hdmap_info.data = extracted_data;
+	hdmap_info_dict["waypoint"] = hdmap_info;
+
+	makeWaypoint();
+	int_marker_server->applyChanges();
+
+}
+
+
+void RvizHdmapEditorCore::saveWaypoint(const std::string &filename)
+{
+	std::cout << filename << std::endl;
+	std::ofstream ofs(filename);
+
+	ofs << hdmap_info_dict.at("waypoint").header << std::endl;
+
+	for(auto &data_elem: hdmap_info_dict.at("waypoint").data)
+	{
+		for (int j = 0; j < data_elem.second.size() - 1 ; j++)
+		{
+			ofs << data_elem.second[j] << ",";
+		}
+		ofs << data_elem.second.back() << std::endl;
+	}
+}
+
+
+void RvizHdmapEditorCore::makeWaypoint()
+{
+	std::cout << "make waypoint" << std::endl; 
+
+	geometry_msgs::Pose p;
+    std::vector<std::string> added_points;
+
+	std_msgs::ColorRGBA color;
+	color.r = 0.5;
+	color.g = 0.2;
+	color.b = 0.2;
+	color.a = 1.0;
+
+	for (const auto &wp_elem : hdmap_info_dict.at("waypoint").data)
+	{
+		if (hdmap_info_dict.at("waypoint").is_visible)
+		{
+	        if (std::find(added_points.begin(), added_points.end(), wp_elem.first) != added_points.end())
+	        {
+	            continue;
+	        }
+
+	        added_points.emplace_back(wp_elem.first);
+
+			p.position.x = std::stof(wp_elem.second[0]);
+	        p.position.y = std::stof(wp_elem.second[1]);
+			p.position.z = std::stof(wp_elem.second[2]);
+			p.orientation = rpy2Quat(0.0 ,0.0, std::stof(wp_elem.second[3]));
+			int_marker_server->insert(makeIntVector(wp_elem.first, p, color));
+			int_marker_server->setCallback(wp_elem.first, boost::bind(&RvizHdmapEditorCore::intWaypointMarkerCb, this, _1));
+		}
+		else
+		{
+			int_marker_server->erase(wp_elem.first);
+		}
+	}
+}
+
+
 visualization_msgs::InteractiveMarker RvizHdmapEditorCore::makeIntPoint(const std::string &name, const geometry_msgs::Point &point, const std_msgs::ColorRGBA &color)
 {
 
@@ -651,6 +745,7 @@ visualization_msgs::InteractiveMarker RvizHdmapEditorCore::makeIntPoint(const st
 	return int_marker;
 }
 
+
 visualization_msgs::InteractiveMarker RvizHdmapEditorCore::makeIntVector(const std::string &name, const geometry_msgs::Pose &pose, const std_msgs::ColorRGBA &color)
 {
 
@@ -662,19 +757,6 @@ visualization_msgs::InteractiveMarker RvizHdmapEditorCore::makeIntVector(const s
 
 	visualization_msgs::InteractiveMarkerControl control;
 	control.always_visible = true;
-
-    control.name = "move_3d";
-    control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_3D;
-    int_marker.controls.push_back(control);
-
-    control.orientation.w = 1;
-    control.orientation.x = 0;
-    control.orientation.y = 1;
-    control.orientation.z = 0;
-    control.name = "rotate_z";
-    control.interaction_mode = visualization_msgs::InteractiveMarkerControl::ROTATE_AXIS;
-    int_marker.controls.push_back(control);
-
 	visualization_msgs::Marker marker;
 	marker.ns="point";
 	marker.id = std::stoi(name);
@@ -684,31 +766,33 @@ visualization_msgs::InteractiveMarker RvizHdmapEditorCore::makeIntVector(const s
 	marker.scale.y = 0.5;
 	marker.scale.z = 0.5;
 	marker.color = color;
-
 	control.markers.emplace_back(marker);
-    int_marker.controls.emplace_back(control);
+    control.name = "move_3d";
+    control.orientation.w = 1;
+    control.orientation.x = 0;
+    control.orientation.y = 1;
+    control.orientation.z = 0;
+    control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_PLANE;
+    int_marker.controls.push_back(control);
 
-    // control.always_visible = true;
-    // control.interaction_mode = visualization_msgs::InteractiveMarkerControl::NONE;
-    // control.orientation.x = 0;
-    // control.orientation.y = 1;
-    // control.orientation.z = 0;
-    // control.orientation.w = 1;
+	visualization_msgs::InteractiveMarkerControl move_control;
+   	move_control.orientation.w = 1;
+    move_control.orientation.x = 0;
+    move_control.orientation.y = 1;
+    move_control.orientation.z = 0;
 
-    // marker.ns="range";
-	// marker.id = std::stoi(name);
-	// marker.type = visualization_msgs::Marker::CYLINDER;
-	// marker.action = visualization_msgs::Marker::ADD;
-	// marker.scale.x = 3.5;
-	// marker.scale.y = 3.5;
-	// marker.scale.z = 0.1;
-	// marker.color.r = 0.5;
-	// marker.color.g = 0.5;
-	// marker.color.b = 1;
-	// marker.color.a = 0.2;
+    move_control.name = "rotate_z";
+    move_control.interaction_mode = visualization_msgs::InteractiveMarkerControl::ROTATE_AXIS;
+    int_marker.controls.push_back(move_control);
 
-    // control.markers.emplace_back(marker);
-	// int_marker.controls.emplace_back(control);
+   	// move_control.orientation.w = 1;
+    // move_control.orientation.x = 0;
+    // move_control.orientation.y = 1;
+    // move_control.orientation.z = 0;
+    // move_control.name = "move_z";
+    // move_control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_AXIS;
+    // int_marker.controls.push_back(move_control);
+
 	return int_marker;
 }
 
@@ -731,12 +815,14 @@ double RvizHdmapEditorCore::quat2Yaw(geometry_msgs::Quaternion gm_quat)
 	return yaw;
 }
 
+
 void RvizHdmapEditorCore::intPointMarkerCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
 {
 	hdmap_info_dict.at("point").data.at(feedback->marker_name)[3] = std::to_string(feedback->pose.position.z);
 	hdmap_info_dict.at("point").data.at(feedback->marker_name)[4] = std::to_string(feedback->pose.position.y);
 	hdmap_info_dict.at("point").data.at(feedback->marker_name)[5] = std::to_string(feedback->pose.position.x);
 }
+
 
 void RvizHdmapEditorCore::intVectorMarkerCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
 {
@@ -753,6 +839,39 @@ void RvizHdmapEditorCore::intVectorMarkerCb(const visualization_msgs::Interactiv
 		}
 	}
 }
+
+
+void RvizHdmapEditorCore::intWaypointMarkerCb(const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback)
+{
+	hdmap_info_dict.at("waypoint").data.at(feedback->marker_name)[2] = std::to_string(feedback->pose.position.z);
+	hdmap_info_dict.at("waypoint").data.at(feedback->marker_name)[1] = std::to_string(feedback->pose.position.y);
+	hdmap_info_dict.at("waypoint").data.at(feedback->marker_name)[0] = std::to_string(feedback->pose.position.x);
+	hdmap_info_dict.at("waypoint").data.at(feedback->marker_name)[3] = std::to_string(quat2Yaw(feedback->pose.orientation));
+}
+
+
+void RvizHdmapEditorCore::clearAdas()
+{
+
+	for (auto &hdmap_info : hdmap_info_dict)
+	{
+		if (hdmap_info.first == "waypoint") continue;
+		hdmap_info.second.is_visible = false;
+		refleshAdasMarker();
+		hdmap_info_dict.erase(hdmap_info.first);
+	}
+
+}
+
+void RvizHdmapEditorCore::clearWaypoint()
+{
+	if (!hdmap_info_dict.count("waypoint")) return;
+	hdmap_info_dict.at("waypoint").is_visible = false;
+	makeWaypoint();
+	int_marker_server->applyChanges();
+	hdmap_info_dict.erase("waypoint");
+}
+
 
 int main(int argc, char **argv)
 {

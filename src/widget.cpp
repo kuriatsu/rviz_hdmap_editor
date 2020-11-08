@@ -20,6 +20,18 @@ Widget::~Widget()
 
 void Widget::on_hdmap_ok_clicked()
 {
+    if (waypoint_ok_toggle)
+    {
+        editor_core.saveWaypoint(ui->waypoint_output_filename->text().toStdString());
+        ui->waypoint_ok->setText(tr("OK"));
+        editor_core.clearWaypoint();
+        ui->waypoint_input_filename->setEnabled(waypoint_ok_toggle);
+        ui->waypoint_input_select->setEnabled(waypoint_ok_toggle);
+        ui->waypoint_output_filename->setEnabled(waypoint_ok_toggle);
+        ui->waypoint_output_select->setEnabled(waypoint_ok_toggle);
+        waypoint_ok_toggle = !waypoint_ok_toggle;
+    }
+
     if (!hdmap_ok_toggle)
     {
         if (ui->hdmap_input_filename->text().isEmpty() || ui->hdmap_output_filename->text().isEmpty()) return;
@@ -46,7 +58,7 @@ void Widget::on_hdmap_ok_clicked()
     }
     else
     {
-        editor_core.saveHdmap((ui->hdmap_output_filename->text().toStdString()));
+        editor_core.saveHdmap(ui->hdmap_output_filename->text().toStdString());
         ui->hdmap_ok->setText(tr("OK"));
 
         ui->node->setEnabled(false);
@@ -60,6 +72,8 @@ void Widget::on_hdmap_ok_clicked()
         ui->crosswalk->setEnabled(false);
         ui->whiteline->setEnabled(false);
         ui->intersection->setEnabled(false);
+
+        editor_core.clearAdas();
 
     }
     ui->hdmap_input_filename->setEnabled(hdmap_ok_toggle);
@@ -92,15 +106,44 @@ void Widget::on_hdmap_output_select_clicked()
 
 void Widget::on_waypoint_ok_clicked()
 {
+    if(hdmap_ok_toggle)
+    {
+        editor_core.saveHdmap(ui->hdmap_output_filename->text().toStdString());
+        ui->hdmap_ok->setText(tr("OK"));
+
+        ui->node->setEnabled(false);
+        ui->lane->setEnabled(false);
+        ui->area->setEnabled(false);
+        ui->roadedge->setEnabled(false);
+        ui->stopline->setEnabled(false);
+        ui->railroad->setEnabled(false);
+        ui->pole->setEnabled(false);
+        ui->signal->setEnabled(false);
+        ui->crosswalk->setEnabled(false);
+        ui->whiteline->setEnabled(false);
+        ui->intersection->setEnabled(false);
+
+        editor_core.clearAdas();
+
+        ui->hdmap_input_filename->setEnabled(hdmap_ok_toggle);
+        ui->hdmap_input_select->setEnabled(hdmap_ok_toggle);
+        ui->hdmap_output_filename->setEnabled(hdmap_ok_toggle);
+        ui->hdmap_output_select->setEnabled(hdmap_ok_toggle);
+        hdmap_ok_toggle = !hdmap_ok_toggle;
+    }
+
     if (!waypoint_ok_toggle)
     {
-        // editor_core.readHdmaps(hdmap_input_filenames)
+        if (ui->waypoint_input_filename->text().isEmpty() || ui->waypoint_output_filename->text().isEmpty()) return;
+        editor_core.readWaypoint(ui->waypoint_input_filename->text().toStdString());
         ui->waypoint_ok->setText(tr("Save"));
 
     }
     else
     {
+        editor_core.saveWaypoint(ui->waypoint_output_filename->text().toStdString());
         ui->waypoint_ok->setText(tr("OK"));
+        editor_core.clearWaypoint();
 
     }
     ui->waypoint_input_filename->setEnabled(waypoint_ok_toggle);
