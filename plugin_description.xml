@@ -1,5 +1,0 @@
-<library path="lib/libwidget">
-  <class name="rviz_hdmap_builder/Widget" type="rviz_hdmap_builder::Widget" base_class_type="rviz::Panel">
-    <description>rviz_hdmap_builder panel</description>
-  </class>
-</library>
