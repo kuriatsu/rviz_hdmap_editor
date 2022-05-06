@@ -31,8 +31,7 @@ cd ../
 catkin_make
 ```
 
-3. Download example (optional)
-Download from [here](https://autoware-ai.s3.us-east-2.amazonaws.com/sample_moriyama_data.tar.gz)
+3. Download example (optional) from [here](https://autoware-ai.s3.us-east-2.amazonaws.com/sample_moriyama_data.tar.gz)
 
 ## Usage
 1. start rviz
