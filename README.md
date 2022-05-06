@@ -31,6 +31,9 @@ cd ../
 catkin_make
 ```
 
+3. Download example (optional)
+Download from [here](https://autoware-ai.s3.us-east-2.amazonaws.com/sample_moriyama_data.tar.gz)
+
 ## Usage
 1. start rviz
 ```bash
@@ -56,7 +59,7 @@ rosrun tf static_transform_publisher 0 0 0 0 0 0 /map /tf 100
 
 6. Show InteractiveMarker and Marker.
 
-7. Push `...` button in the panel and Select HDMap. point.csv, line.csv, vector.csv, and dtlane.csv are necessary. 
+7. Push `...` button in the panel and Select HDMap. point.csv, line.csv, vector.csv, and dtlane.csv are necessary.
 
 ![select_map](https://github.com/kuriatsu/rviz_hdmap_editor/blob/image/image/select_map.png)
 
