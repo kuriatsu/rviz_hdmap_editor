@@ -33,6 +33,12 @@ catkin_make
 
 3. Download example (optional) from [here](https://autoware-ai.s3.us-east-2.amazonaws.com/sample_moriyama_data.tar.gz)
 
+The sample map is very huge, I recommend to use more lighter map.
+The indention code of the sample is CRLF, but c++ only support LF. Change character code by (you may need to install nkf by `sudo apt install nkf`)
+```bash 
+nkf -Lu --overwrite data/map/vector_map/*.csv
+```
+
 ## Usage
 1. start rviz
 ```bash
@@ -69,6 +75,9 @@ rosrun tf static_transform_publisher 0 0 0 0 0 0 /map /tf 100
 9. Push OK
 
 10. Click checkbox which you want to edit. (fig shows when you click `node`)
+
+The coordinate of the sample map is very far from origin (-15811.335, -85688.332)
+Please move view point.
 
 ![edit](https://github.com/kuriatsu/rviz_hdmap_editor/blob/image/image/edit_node.png)
 
