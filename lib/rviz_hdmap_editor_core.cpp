@@ -115,12 +115,17 @@ void RvizHdmapEditorCore::refleshAdasMarker()
 
 void RvizHdmapEditorCore::makeWhiteline()
 {
-	std::cout << "make whiteline" << std::endl; 
+	std::cout << "Drawing whiteline" << std::endl; 
+	if (hdmap_info_dict.count("whiteline") == 0) {
+		ROS_INFO("No whiteline data");
+		return;
+	}
+	
 	geometry_msgs::Point p;
-    std::vector<std::string> added_points;
-    auto &whiteline_data = hdmap_info_dict.at("whiteline").data;
-    auto &line_data = hdmap_info_dict.at("line").data;
-    auto &point_data = hdmap_info_dict.at("point").data;
+	std::vector<std::string> added_points;
+	auto &whiteline_data = hdmap_info_dict.at("whiteline").data;
+	auto &line_data = hdmap_info_dict.at("line").data;
+	auto &point_data = hdmap_info_dict.at("point").data;
 
 	std_msgs::ColorRGBA color;
 	color.r = 1.0;
@@ -161,13 +166,17 @@ void RvizHdmapEditorCore::makeWhiteline()
 
 void RvizHdmapEditorCore::makeRoadedge()
 {
-	std::cout << "make roadedge" << std::endl; 
+	std::cout << "Drawing roadedge" << std::endl; 
+	if (hdmap_info_dict.count("roadedge") == 0) {
+		ROS_INFO("No roadedge data");
+		return;
+	}
 
 	geometry_msgs::Point p;
-    std::vector<std::string> added_points;
-    auto &roadedge_data = hdmap_info_dict.at("roadedge").data;
-    auto &line_data = hdmap_info_dict.at("line").data;
-    auto &point_data = hdmap_info_dict.at("point").data;
+	std::vector<std::string> added_points;
+	auto &roadedge_data = hdmap_info_dict.at("roadedge").data;
+	auto &line_data = hdmap_info_dict.at("line").data;
+	auto &point_data = hdmap_info_dict.at("point").data;
 
 	std_msgs::ColorRGBA color;
 	color.r = 0.2;
@@ -208,13 +217,17 @@ void RvizHdmapEditorCore::makeRoadedge()
 
 void RvizHdmapEditorCore::makeStopline()
 {
-	std::cout << "make stopline" << std::endl; 
+	std::cout << "Drawing stopline" << std::endl; 
+	if (hdmap_info_dict.count("stopline") == 0) {
+		ROS_INFO("No stopline data");
+		return;
+	}
 
 	geometry_msgs::Point p;
-    std::vector<std::string> added_points;
-    auto &stopline_data = hdmap_info_dict.at("stopline").data;
-    auto &line_data = hdmap_info_dict.at("line").data;
-    auto &point_data = hdmap_info_dict.at("point").data;
+	std::vector<std::string> added_points;
+	auto &stopline_data = hdmap_info_dict.at("stopline").data;
+	auto &line_data = hdmap_info_dict.at("line").data;
+	auto &point_data = hdmap_info_dict.at("point").data;
 
 	std_msgs::ColorRGBA color;
 	color.r = 1.0;
@@ -256,12 +269,16 @@ void RvizHdmapEditorCore::makeStopline()
 
 void RvizHdmapEditorCore::makeNode()
 {
-	std::cout << "make node" << std::endl; 
+	std::cout << "Drawing node" << std::endl; 
+	if (hdmap_info_dict.count("lane") == 0) {
+		ROS_INFO("Could not find lane data");
+		return;
+	}
 
 	geometry_msgs::Point p;
-    std::vector<std::string> added_points;
-    auto &node_data = hdmap_info_dict.at("node").data;
-    auto &point_data = hdmap_info_dict.at("point").data;
+	std::vector<std::string> added_points;
+	auto &node_data = hdmap_info_dict.at("node").data;
+	auto &point_data = hdmap_info_dict.at("point").data;
 	std::cout << "extract node" << std::endl; 
 
 	std_msgs::ColorRGBA color;
@@ -276,26 +293,26 @@ void RvizHdmapEditorCore::makeNode()
 
 		if (hdmap_info_dict.at("node").is_visible)
 		{
-		    if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
-	        {
-	            continue;
-	        }
+			if (std::find(added_points.begin(), added_points.end(), point_id) != added_points.end())
+			{
+			    continue;
+			}
 
 			std::vector<std::string> &point = point_data.at(point_id);
 			added_points.emplace_back(point_id);
 
-	        p.y = std::stof(point[4]);
+			p.y = std::stof(point[4]);
 			p.x = std::stof(point[5]);
 			p.z = std::stof(point[3]);
 			// std::cout << node_elem.second[0] << std::endl;
 
 			int_marker_server->insert(makeIntPoint(point_id, p, color));
 			int_marker_server->setCallback(point_id, boost::bind(&RvizHdmapEditorCore::intPointMarkerCb, this, _1));
-		
+	
 		}
 		else
 		{
-			int_marker_server->erase(point_id);
+			int_marker_server->erase(node_elem.second[0]);
 		}    
 
 	}
@@ -303,14 +320,19 @@ void RvizHdmapEditorCore::makeNode()
 
 void RvizHdmapEditorCore::makeRailroad()
 {
-	std::cout << "make railroad_crossing" << std::endl; 
+	std::cout << "Drawing railroad_crossing" << std::endl; 
+	if (hdmap_info_dict.count("railroad_crossing") == 0) {
+		ROS_INFO("No railroad_crossing data");
+		return;
+	}
 
 	geometry_msgs::Point p;
-    std::vector<std::string> added_points;
-    auto &railroad_data = hdmap_info_dict.at("railroad_crossing").data;
-    auto &area_data = hdmap_info_dict.at("area").data;
-    auto &line_data = hdmap_info_dict.at("line").data;
-    auto &point_data = hdmap_info_dict.at("point").data;
+	std::vector<std::string> added_points;
+
+	auto &railroad_data = hdmap_info_dict.at("railroad_crossing").data;
+	auto &area_data = hdmap_info_dict.at("area").data;
+	auto &line_data = hdmap_info_dict.at("line").data;
+	auto &point_data = hdmap_info_dict.at("point").data;
 
 	std_msgs::ColorRGBA color;
 	color.r = 0.0;
@@ -355,14 +377,18 @@ void RvizHdmapEditorCore::makeRailroad()
 
 void RvizHdmapEditorCore::makeCrosswalk()
 {
-	std::cout << "make crosswalk" << std::endl; 
+	std::cout << "Drawing crosswalk" << std::endl; 
+	if (hdmap_info_dict.count("crosswalk") == 0) {
+		ROS_INFO("No crosswalk data");
+		return;
+	}
 
 	geometry_msgs::Point p;
-    std::vector<std::string> added_points;
-    auto &crosswalk_data = hdmap_info_dict.at("crosswalk").data;
-    auto &area_data = hdmap_info_dict.at("area").data;
-    auto &line_data = hdmap_info_dict.at("line").data;
-    auto &point_data = hdmap_info_dict.at("point").data;
+	std::vector<std::string> added_points;
+	auto &crosswalk_data = hdmap_info_dict.at("crosswalk").data;
+	auto &area_data = hdmap_info_dict.at("area").data;
+	auto &line_data = hdmap_info_dict.at("line").data;
+	auto &point_data = hdmap_info_dict.at("point").data;
 
 	std_msgs::ColorRGBA color;
 	color.r = 1.0;
@@ -406,14 +432,19 @@ void RvizHdmapEditorCore::makeCrosswalk()
 
 void RvizHdmapEditorCore::makeIntersection()
 {
-	std::cout << "make intersection" << std::endl; 
+	std::cout << "Drawing intersection" << std::endl; 
+	if (hdmap_info_dict.count("intersection") == 0) {
+		ROS_INFO("No intersection data");
+		return;
+	}
 
 	geometry_msgs::Point p;
-    std::vector<std::string> added_points;
-    auto &intersection_data = hdmap_info_dict.at("intersection").data;
-    auto &area_data = hdmap_info_dict.at("area").data;
-    auto &line_data = hdmap_info_dict.at("line").data;
-    auto &point_data = hdmap_info_dict.at("point").data;
+	std::vector<std::string> added_points;
+
+	auto &intersection_data = hdmap_info_dict.at("intersection").data;
+	auto &area_data = hdmap_info_dict.at("area").data;
+	auto &line_data = hdmap_info_dict.at("line").data;
+	auto &point_data = hdmap_info_dict.at("point").data;
 
 	std_msgs::ColorRGBA color;
 	color.r = 0.0;
@@ -458,13 +489,17 @@ void RvizHdmapEditorCore::makeIntersection()
 
 void RvizHdmapEditorCore::makePole()
 {
-	std::cout << "make pole" << std::endl; 
+	std::cout << "Drawing pole" << std::endl; 
+	if (hdmap_info_dict.count("pole") == 0) {
+		ROS_INFO("No pole data");
+		return;
+	}
 
 	geometry_msgs::Pose p;
-    std::vector<std::string> added_points;
-    auto &pole_data = hdmap_info_dict.at("pole").data;
-    auto &vector_data = hdmap_info_dict.at("vector").data;
-    auto &point_data = hdmap_info_dict.at("point").data;
+	std::vector<std::string> added_points;
+	auto &pole_data = hdmap_info_dict.at("pole").data;
+	auto &vector_data = hdmap_info_dict.at("vector").data;
+	auto &point_data = hdmap_info_dict.at("point").data;
 
 	std_msgs::ColorRGBA color;
 	color.r = 0.5;
@@ -504,13 +539,17 @@ void RvizHdmapEditorCore::makePole()
 
 void RvizHdmapEditorCore::makeSignal()
 {
-	std::cout << "make signaldata" << std::endl; 
+	std::cout << "Drawing signaldata" << std::endl; 
+	if (hdmap_info_dict.count("signaldata") == 0) {
+		ROS_INFO("No signaldata data");
+		return;
+	}
 
 	geometry_msgs::Pose p;
-    std::vector<std::string> added_points;
-    auto &signal_data = hdmap_info_dict.at("signaldata").data;
-    auto &vector_data = hdmap_info_dict.at("vector").data;
-    auto &point_data = hdmap_info_dict.at("point").data;
+	std::vector<std::string> added_points;
+	auto &signal_data = hdmap_info_dict.at("signaldata").data;
+	auto &vector_data = hdmap_info_dict.at("vector").data;
+	auto &point_data = hdmap_info_dict.at("point").data;
 
 	std_msgs::ColorRGBA color;
 	color.r = 0.0;
@@ -548,13 +587,17 @@ void RvizHdmapEditorCore::makeSignal()
 
 void RvizHdmapEditorCore::makeLane()
 {
-	std::cout << "make lane" << std::endl; 
+	std::cout << "Drawing lane" << std::endl; 
+	if (hdmap_info_dict.count("lane") == 0) {
+		ROS_INFO("No lane data");
+		return;
+	}
 
 	geometry_msgs::Point p;
-    std::vector<std::string> added_points;
-    auto &lane_data = hdmap_info_dict.at("lane").data;
-    auto &dtlane_data = hdmap_info_dict.at("dtlane").data;
-    auto &point_data = hdmap_info_dict.at("point").data;
+	std::vector<std::string> added_points;
+	auto &lane_data = hdmap_info_dict.at("lane").data;
+	auto &dtlane_data = hdmap_info_dict.at("dtlane").data;
+	auto &point_data = hdmap_info_dict.at("point").data;
 
 	std_msgs::ColorRGBA color;
 	color.r = 0.5;
@@ -649,7 +692,7 @@ void RvizHdmapEditorCore::saveWaypoint(const std::string &filename)
 
 void RvizHdmapEditorCore::makeWaypoint()
 {
-	std::cout << "make waypoint" << std::endl; 
+	std::cout << "Drawing waypoint" << std::endl; 
 
 	geometry_msgs::Pose p;
     std::vector<std::string> added_points;
